@@ -12,6 +12,9 @@ body{margin:0;font-family:Heebo,Arial,sans-serif;background:var(--bg);color:var(
 header{background:var(--ink);color:#fff;padding:36px 20px}
 header h1{margin:0 auto;max-width:900px;font-size:clamp(28px,6vw,44px);font-weight:800}
 header p{margin:6px auto 0;max-width:900px;color:#b8c9cf}
+.hd{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:14px}
+header .hd h1{margin:0;max-width:none}
+#logo{height:60px;max-width:180px;object-fit:contain;background:#fff;border-radius:10px;padding:6px}
 main{max-width:900px;margin:0 auto;padding:24px 16px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -50,7 +53,7 @@ input[type=text],input[type=tel],input[type=email],textarea{width:100%;padding:1
 </head>
 <body>
 <header>
-  <h1>שם העסק</h1>
+  <div class="hd"><img id="logo" class="hidden" alt=""><h1 id="biz">שם העסק</h1></div>
   <p>בחרו מוצרים, אשרו את ההזמנה ונחזור אליכם לסיום התשלום.</p>
 </header>
 <main>
@@ -102,9 +105,16 @@ const $ = id => document.getElementById(id);
 const money = n => "₪" + Number(n).toLocaleString("he-IL");
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
+function applySettings(s){
+  if (!s) return;
+  if (s.businessName) { $("biz").textContent = s.businessName; document.title = "הזמנה – " + s.businessName; }
+  if (s.logo) { $("logo").src = s.logo; $("logo").classList.remove("hidden"); }
+}
+
 async function load(){
   try {
-    PRODUCTS = SCRIPT_URL ? (await (await fetch(SCRIPT_URL)).json()).products : DEMO;
+    if (SCRIPT_URL) { const j = await (await fetch(SCRIPT_URL)).json(); PRODUCTS = j.products; applySettings(j.settings); }
+    else PRODUCTS = DEMO;
   } catch (e) { PRODUCTS = []; }
   $("grid").innerHTML = PRODUCTS.length ? PRODUCTS.map(p => `
     <article class="card">

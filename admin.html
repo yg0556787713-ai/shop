@@ -51,6 +51,18 @@ button:focus-visible,input:focus-visible{outline:3px solid #f0b429;outline-offse
 
 <div id="app" class="hidden">
   <section class="panel">
+    <h2>פרטי העסק</h2>
+    <label for="bname">שם העסק</label><input type="text" id="bname">
+    <label for="blogo">לוגו</label><input type="file" id="blogo" accept="image/*">
+    <img id="logoPrev" class="hidden" alt="לוגו" style="max-height:80px;margin-top:8px;background:#fff;border:1px solid var(--line);padding:6px;border-radius:8px">
+    <div class="row">
+      <button class="btn" id="saveBiz">שמור פרטי עסק</button>
+      <button class="btn ghost hidden" id="rmLogo">הסר לוגו</button>
+    </div>
+    <div class="status" id="bizStatus"></div>
+  </section>
+
+  <section class="panel">
     <h2 id="formTitle">הוספת מוצר</h2>
     <label for="pname">שם המוצר</label><input type="text" id="pname">
     <label for="pprice">מחיר (₪)</label><input type="number" id="pprice" min="0" step="0.01" inputmode="decimal">
@@ -91,7 +103,7 @@ $("enter").onclick = async () => {
   try {
     const r = await api({ action: "list" });
     if (r.error) { $("loginErr").textContent = "סיסמה שגויה."; return; }
-    products = r.products; $("login").classList.add("hidden"); $("app").classList.remove("hidden"); render();
+    products = r.products; settings = r.settings || {}; fillBiz(); $("login").classList.add("hidden"); $("app").classList.remove("hidden"); render();
   } catch (e) { $("loginErr").textContent = "לא הצלחתי להתחבר. בדקו את כתובת ה-Web App."; }
 };
 $("pw").addEventListener("keydown", e => { if (e.key === "Enter") $("enter").click(); });
@@ -121,6 +133,33 @@ $("list").addEventListener("click", async e => {
   }
 });
 
+let settings = {}, newLogo = null, logoRemoved = false;
+function fillBiz(){
+  $("bname").value = settings.businessName || "";
+  if (settings.logo) { $("logoPrev").src = settings.logo; $("logoPrev").classList.remove("hidden"); $("rmLogo").classList.remove("hidden"); }
+}
+$("blogo").onchange = () => {
+  const f = $("blogo").files[0];
+  if (f) { newLogo = f; logoRemoved = false; $("logoPrev").src = URL.createObjectURL(f); $("logoPrev").classList.remove("hidden"); $("rmLogo").classList.remove("hidden"); }
+};
+$("rmLogo").onclick = () => {
+  newLogo = null; logoRemoved = true; $("blogo").value = "";
+  $("logoPrev").classList.add("hidden"); $("rmLogo").classList.add("hidden");
+};
+$("saveBiz").onclick = async () => {
+  $("saveBiz").disabled = true; $("bizStatus").textContent = "שומר...";
+  try {
+    const s = { businessName: $("bname").value.trim() };
+    if (newLogo) s.logo = (await api({ action: "upload", mime: "image/png", data: await shrink(newLogo, 400, "image/png") })).url;
+    else if (logoRemoved) s.logo = "";
+    const r = await api({ action: "saveSettings", settings: s });
+    if (r.error) throw 0;
+    settings = r.settings; newLogo = null; logoRemoved = false;
+    $("bizStatus").textContent = "נשמר. השינוי מופיע באתר.";
+  } catch (e) { $("bizStatus").textContent = "השמירה נכשלה, נסו שוב."; }
+  $("saveBiz").disabled = false;
+};
+
 function reset(){
   editId = ""; editImage = ""; $("pname").value = ""; $("pprice").value = ""; $("pfile").value = "";
   $("preview").classList.add("hidden"); $("formTitle").textContent = "הוספת מוצר"; $("cancel").classList.add("hidden");
@@ -133,14 +172,14 @@ $("pfile").onchange = () => {
 };
 
 // מקטין תמונה לרוחב 800 פיקסלים ומחזיר base64 (בלי הקידומת)
-function shrink(file){
+function shrink(file, max = 800, type = "image/jpeg"){
   return new Promise((res, rej) => {
     const img = new Image();
     img.onload = () => {
-      const k = Math.min(1, 800 / img.width), c = document.createElement("canvas");
+      const k = Math.min(1, max / img.width), c = document.createElement("canvas");
       c.width = img.width * k; c.height = img.height * k;
       c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-      res(c.toDataURL("image/jpeg", 0.82).split(",")[1]);
+      res(c.toDataURL(type, 0.82).split(",")[1]);
     };
     img.onerror = rej; img.src = URL.createObjectURL(file);
   });
