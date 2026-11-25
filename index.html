@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>הזמנה – שם העסק</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f6f7;--card:#fff;--ink:#14262e;--mute:#5d7079;--line:#d9e2e6;--acc:#0e6b6b;--acc2:#0a4f4f;--soft:#e3f0ef}
+*{box-sizing:border-box}
+body{margin:0;font-family:Heebo,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;padding-bottom:90px}
+header{background:var(--ink);color:#fff;padding:36px 20px}
+header h1{margin:0 auto;max-width:900px;font-size:clamp(28px,6vw,44px);font-weight:800}
+header p{margin:6px auto 0;max-width:900px;color:#b8c9cf}
+main{max-width:900px;margin:0 auto;padding:24px 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.pic{aspect-ratio:4/3;background:var(--soft);display:flex;align-items:center;justify-content:center;font-size:64px;font-weight:800;color:var(--acc);overflow:hidden}
+.pic img{width:100%;height:100%;object-fit:cover}
+.info{padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.name{font-size:20px;font-weight:700}
+.price{color:var(--mute)}
+.qty{display:flex;align-items:center;gap:10px}
+.qty button{width:40px;height:40px;border-radius:8px;border:1px solid var(--line);background:#fff;font-size:22px;cursor:pointer;color:var(--ink)}
+.qty button:hover{background:var(--soft)}
+.qty output{min-width:28px;text-align:center;font-weight:700;font-size:18px}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #f0b429;outline-offset:2px}
+.bar{position:fixed;inset:auto 0 0 0;background:#fff;border-top:1px solid var(--line);padding:12px 16px;display:flex;justify-content:center}
+.bar>div{width:100%;max-width:900px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.btn{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:12px 24px;font:700 17px Heebo,Arial,sans-serif;cursor:pointer}
+.btn:hover{background:var(--acc2)}
+.btn:disabled{background:#9db3b3;cursor:not-allowed}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px}
+.panel h2{margin:0 0 12px;font-size:24px}
+table{width:100%;border-collapse:collapse;margin-bottom:8px}
+td,th{padding:9px 6px;border-bottom:1px solid var(--line);text-align:right}
+th{color:var(--mute);font-weight:500}
+.total td{font-weight:800;font-size:18px;border-bottom:0}
+label{display:block;font-weight:500;margin:14px 0 4px}
+input[type=text],input[type=tel],input[type=email],textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;font:inherit}
+.chk{display:flex;gap:10px;align-items:flex-start;margin:18px 0}
+.chk input{margin-top:6px;width:20px;height:20px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.msg{padding:12px;border-radius:8px;margin-top:14px;background:#fdecec;color:#8a1f1f}
+.hidden{display:none}
+.done{text-align:center;padding:40px 20px}
+.done h2{font-size:30px}
+</style>
+</head>
+<body>
+<header>
+  <h1>שם העסק</h1>
+  <p>בחרו מוצרים, אשרו את ההזמנה ונחזור אליכם לסיום התשלום.</p>
+</header>
+<main>
+  <section id="step-shop"><div class="grid" id="grid"><p>טוען מוצרים...</p></div></section>
+
+  <section id="step-confirm" class="hidden">
+    <div class="panel">
+      <h2>סיכום ההזמנה</h2>
+      <table><thead><tr><th>מוצר</th><th>כמות</th><th>סכום</th></tr></thead><tbody id="sum"></tbody></table>
+      <label for="fname">שם מלא</label><input type="text" id="fname" autocomplete="name">
+      <label for="phone">טלפון</label><input type="tel" id="phone" autocomplete="tel">
+      <label for="email">מייל</label><input type="email" id="email" autocomplete="email">
+      <label for="notes">הערות להזמנה (לא חובה)</label><textarea id="notes" rows="3"></textarea>
+      <label class="chk"><input type="checkbox" id="ok"><span>אני מאשר/ת את ההזמנה. התשלום יסתיים מולכם ישירות, לא באתר.</span></label>
+      <div id="err" class="msg hidden"></div>
+      <div class="row">
+        <button class="btn" id="send">שלח הזמנה</button>
+        <button class="btn ghost" id="back">חזרה לסל</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="step-done" class="hidden">
+    <div class="panel done">
+      <h2>ההזמנה התקבלה</h2>
+      <p>שלחנו לכם עותק למייל. ניצור איתכם קשר בקרוב לסיום התשלום.</p>
+    </div>
+  </section>
+</main>
+
+<div class="bar" id="bar">
+  <div>
+    <div><strong id="count">0</strong> פריטים · <strong id="total">₪0</strong></div>
+    <button class="btn" id="next" disabled>המשך לאישור הזמנה</button>
+  </div>
+</div>
+
+<script>
+/* ===== הגדרה אחת בלבד: הדביקו כאן את כתובת ה-Web App מ-Google Apps Script ===== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzP7dqtSRh_qqbathn8kMax1X3ZnruauaapEgorE0QHUeji3N2_k33P1UukOFqBcqOsFQ/exec";
+/* ================================================================================ */
+
+// מוצרי דוגמה – מוצגים רק כל עוד SCRIPT_URL ריק
+const DEMO = [{id:"1",name:"1",price:50,image:""},{id:"2",name:"2",price:80,image:""},{id:"3",name:"3",price:120,image:""}];
+
+let PRODUCTS = [];
+const cart = {};
+const $ = id => document.getElementById(id);
+const money = n => "₪" + Number(n).toLocaleString("he-IL");
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+async function load(){
+  try {
+    PRODUCTS = SCRIPT_URL ? (await (await fetch(SCRIPT_URL)).json()).products : DEMO;
+  } catch (e) { PRODUCTS = []; }
+  $("grid").innerHTML = PRODUCTS.length ? PRODUCTS.map(p => `
+    <article class="card">
+      <div class="pic">${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}">` : esc(p.name.slice(0,2))}</div>
+      <div class="info">
+        <div class="name">${esc(p.name)}</div>
+        <div class="price">${money(p.price)}</div>
+        <div class="qty">
+          <button type="button" data-id="${esc(p.id)}" data-d="1" aria-label="הוסף">+</button>
+          <output id="q${esc(p.id)}">0</output>
+          <button type="button" data-id="${esc(p.id)}" data-d="-1" aria-label="הסר">−</button>
+        </div>
+      </div>
+    </article>`).join("") : "<p>אין מוצרים להצגה כרגע.</p>";
+}
+load();
+
+$("grid").addEventListener("click", e => {
+  const b = e.target.closest("button[data-id]"); if (!b) return;
+  const id = b.dataset.id, q = Math.max(0, (cart[id] || 0) + Number(b.dataset.d));
+  cart[id] = q; $("q" + id).textContent = q; refresh();
+});
+
+function items(){ return PRODUCTS.filter(p => cart[p.id] > 0).map(p => ({...p, qty: cart[p.id], sum: cart[p.id] * p.price})); }
+function refresh(){
+  const it = items(), n = it.reduce((a, x) => a + x.qty, 0), t = it.reduce((a, x) => a + x.sum, 0);
+  $("count").textContent = n; $("total").textContent = money(t); $("next").disabled = n === 0;
+}
+function show(step){
+  ["shop","confirm","done"].forEach(s => $("step-" + s).classList.toggle("hidden", s !== step));
+  $("bar").classList.toggle("hidden", step !== "shop");
+  window.scrollTo(0, 0);
+}
+
+$("next").onclick = () => {
+  const it = items();
+  $("sum").innerHTML = it.map(x => `<tr><td>${esc(x.name)}</td><td>${x.qty}</td><td>${money(x.sum)}</td></tr>`).join("")
+    + `<tr class="total"><td colspan="2">סה״כ</td><td>${money(it.reduce((a, x) => a + x.sum, 0))}</td></tr>`;
+  show("confirm");
+};
+$("back").onclick = () => show("shop");
+
+function fail(t){ const e = $("err"); e.textContent = t; e.classList.remove("hidden"); }
+
+$("send").onclick = async () => {
+  $("err").classList.add("hidden");
+  const name = $("fname").value.trim(), phone = $("phone").value.trim(), email = $("email").value.trim();
+  if (!name || !phone) return fail("נא למלא שם וטלפון.");
+  if (!/^\S+@\S+\.\S+$/.test(email)) return fail("נא להזין כתובת מייל תקינה.");
+  if (!$("ok").checked) return fail("יש לסמן את אישור ההזמנה.");
+  if (!SCRIPT_URL) return fail("מצב הדגמה: עדיין לא חוברה כתובת שליחה (SCRIPT_URL).");
+
+  const order = { action: "order", name, phone, email, notes: $("notes").value.trim(),
+    items: items().map(x => ({ id: x.id, qty: x.qty })) };
+  $("send").disabled = true; $("send").textContent = "שולח...";
+  try {
+    const r = await (await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(order) })).json();
+    if (!r.ok) throw 0;
+    show("done");
+  } catch (err) {
+    fail("השליחה נכשלה. נסו שוב או צרו קשר ישירות.");
+    $("send").disabled = false; $("send").textContent = "שלח הזמנה";
+  }
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>ניהול מוצרים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f6f7;--ink:#14262e;--mute:#5d7079;--line:#d9e2e6;--acc:#0e6b6b;--acc2:#0a4f4f;--soft:#e3f0ef;--red:#b3261e}
+*{box-sizing:border-box}
+body{margin:0;font-family:Heebo,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:var(--ink);color:#fff;padding:24px 20px}
+header h1{margin:0 auto;max-width:800px;font-size:28px;font-weight:800}
+main{max-width:800px;margin:0 auto;padding:20px 16px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:18px}
+.panel h2{margin:0 0 8px;font-size:22px}
+label{display:block;font-weight:500;margin:12px 0 4px}
+input[type=text],input[type=password],input[type=number]{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;font:inherit}
+button:focus-visible,input:focus-visible{outline:3px solid #f0b429;outline-offset:2px}
+.btn{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:11px 22px;font:700 16px Heebo,Arial,sans-serif;cursor:pointer}
+.btn:hover{background:var(--acc2)}
+.btn:disabled{background:#9db3b3}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.del{background:#fff;color:var(--red);border:1px solid var(--red)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.item{display:flex;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.thumb{width:64px;height:64px;border-radius:8px;background:var(--soft);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--acc);overflow:hidden;flex:none}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.grow{flex:1;min-width:0}
+.grow b{display:block;font-size:18px}
+.grow span{color:var(--mute)}
+.status{margin-top:12px;color:var(--mute)}
+.err{color:var(--red)}
+.hidden{display:none}
+#preview{width:96px;height:96px;object-fit:cover;border-radius:8px;margin-top:8px}
+</style>
+</head>
+<body>
+<header><h1>ניהול מוצרים</h1></header>
+<main>
+
+<section class="panel" id="login">
+  <h2>כניסה</h2>
+  <label for="pw">סיסמה</label>
+  <input type="password" id="pw" autocomplete="current-password">
+  <div class="row"><button class="btn" id="enter">כניסה</button></div>
+  <div class="status err" id="loginErr"></div>
+</section>
+
+<div id="app" class="hidden">
+  <section class="panel">
+    <h2 id="formTitle">הוספת מוצר</h2>
+    <label for="pname">שם המוצר</label><input type="text" id="pname">
+    <label for="pprice">מחיר (₪)</label><input type="number" id="pprice" min="0" step="0.01" inputmode="decimal">
+    <label for="pfile">תמונה</label><input type="file" id="pfile" accept="image/*">
+    <img id="preview" class="hidden" alt="תצוגה מקדימה">
+    <div class="row">
+      <button class="btn" id="save">שמור מוצר</button>
+      <button class="btn ghost hidden" id="cancel">ביטול עריכה</button>
+    </div>
+    <div class="status" id="status"></div>
+  </section>
+
+  <section class="panel">
+    <h2>המוצרים באתר</h2>
+    <div id="list"></div>
+  </section>
+</div>
+</main>
+
+<script>
+/* הדביקו כאן את אותה כתובת Web App שהדבקתם ב-index.html */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzP7dqtSRh_qqbathn8kMax1X3ZnruauaapEgorE0QHUeji3N2_k33P1UukOFqBcqOsFQ/exec";
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let password = "", products = [], editId = "", editImage = "";
+
+async function api(payload){
+  const r = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ ...payload, password }) });
+  return r.json();
+}
+function say(t, bad){ $("status").textContent = t; $("status").className = "status" + (bad ? " err" : ""); }
+
+$("enter").onclick = async () => {
+  if (!SCRIPT_URL) { $("loginErr").textContent = "עדיין לא הוגדר SCRIPT_URL בקובץ."; return; }
+  password = $("pw").value;
+  $("loginErr").textContent = "בודק...";
+  try {
+    const r = await api({ action: "list" });
+    if (r.error) { $("loginErr").textContent = "סיסמה שגויה."; return; }
+    products = r.products; $("login").classList.add("hidden"); $("app").classList.remove("hidden"); render();
+  } catch (e) { $("loginErr").textContent = "לא הצלחתי להתחבר. בדקו את כתובת ה-Web App."; }
+};
+$("pw").addEventListener("keydown", e => { if (e.key === "Enter") $("enter").click(); });
+
+function render(){
+  $("list").innerHTML = products.length ? products.map(p => `
+    <div class="item">
+      <div class="thumb">${p.image ? `<img src="${esc(p.image)}" alt="">` : esc(p.name.slice(0,2))}</div>
+      <div class="grow"><b>${esc(p.name)}</b><span>₪${p.price}</span></div>
+      <button class="btn ghost" data-edit="${esc(p.id)}">עריכה</button>
+      <button class="btn del" data-del="${esc(p.id)}">מחיקה</button>
+    </div>`).join("") : "<p>אין מוצרים עדיין. הוסיפו את הראשון למעלה.</p>";
+}
+
+$("list").addEventListener("click", async e => {
+  const ed = e.target.dataset.edit, dl = e.target.dataset.del;
+  if (ed) {
+    const p = products.find(x => x.id === ed);
+    editId = p.id; editImage = p.image;
+    $("pname").value = p.name; $("pprice").value = p.price; $("pfile").value = "";
+    $("formTitle").textContent = "עריכת מוצר"; $("cancel").classList.remove("hidden");
+    if (p.image) { $("preview").src = p.image; $("preview").classList.remove("hidden"); } else $("preview").classList.add("hidden");
+    window.scrollTo(0, 0);
+  }
+  if (dl && confirm("למחוק את המוצר? הפעולה סופית.")) {
+    try { products = (await api({ action: "delete", id: dl })).products; render(); } catch (err) { say("המחיקה נכשלה, נסו שוב.", true); }
+  }
+});
+
+function reset(){
+  editId = ""; editImage = ""; $("pname").value = ""; $("pprice").value = ""; $("pfile").value = "";
+  $("preview").classList.add("hidden"); $("formTitle").textContent = "הוספת מוצר"; $("cancel").classList.add("hidden");
+}
+$("cancel").onclick = () => { reset(); say(""); };
+
+$("pfile").onchange = () => {
+  const f = $("pfile").files[0];
+  if (f) { $("preview").src = URL.createObjectURL(f); $("preview").classList.remove("hidden"); }
+};
+
+// מקטין תמונה לרוחב 800 פיקסלים ומחזיר base64 (בלי הקידומת)
+function shrink(file){
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 800 / img.width), c = document.createElement("canvas");
+      c.width = img.width * k; c.height = img.height * k;
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      res(c.toDataURL("image/jpeg", 0.82).split(",")[1]);
+    };
+    img.onerror = rej; img.src = URL.createObjectURL(file);
+  });
+}
+
+$("save").onclick = async () => {
+  const name = $("pname").value.trim(), price = $("pprice").value;
+  if (!name || price === "" || Number(price) < 0) return say("נא למלא שם ומחיר.", true);
+  $("save").disabled = true; say("שומר...");
+  try {
+    let image = editImage;
+    const f = $("pfile").files[0];
+    if (f) { say("מעלה תמונה..."); image = (await api({ action: "upload", data: await shrink(f) })).url; }
+    const r = await api({ action: "save", product: { id: editId, name, price: Number(price), image } });
+    if (r.error) throw 0;
+    products = r.products; render(); reset(); say("נשמר. המוצר מופיע באתר.");
+  } catch (e) { say("השמירה נכשלה, נסו שוב.", true); }
+  $("save").disabled = false;
+};
+</script>
+</body>
+</html>
