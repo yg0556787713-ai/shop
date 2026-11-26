@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>לוח בקרה</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F1E6C9;--ink:#2B1D10;--dim:#6B5A43;--line:rgba(110,78,20,.35);--gold:#7A5A14;--wine:#7C2A3E;--card:rgba(255,255,255,.55);--gg:linear-gradient(120deg,#5C400C 0%,#96701F 40%,#6B4E12 60%,#4F360A 100%)}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Frank Ruhl Libre',Georgia,serif;font-size:18px;line-height:1.6;color:var(--ink);background-color:var(--bg);background-image:radial-gradient(900px 500px at 85% -5%,rgba(124,42,62,.10),transparent 60%),linear-gradient(180deg,rgba(255,255,255,.25),rgba(120,85,30,.10));background-repeat:no-repeat}
+.wrap{max-width:1000px;margin:0 auto;padding:0 16px 60px}
+.gold{background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block;padding:.05em .06em .24em}
+h1{font-size:clamp(2rem,6vw,3rem);margin:26px 0 0;font-weight:500}
+h2{font-size:1.7rem;margin:0 0 10px;font-weight:500}
+.nav{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 22px}
+.nav a{border:1px solid var(--gold);color:var(--gold);border-radius:99px;padding:0 18px;text-decoration:none}
+.nav a:hover{background:rgba(122,90,20,.12)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:20px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 16px}
+.kpi b{display:block;font-size:1.8rem;font-weight:500;line-height:1.2}
+.kpi span{color:var(--dim);font-size:.95rem}
+label{display:block;color:var(--gold);margin:10px 0 2px}
+input,textarea{width:100%;font:1rem 'Frank Ruhl Libre',serif;color:var(--ink);background:rgba(255,255,255,.65);border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 14px}
+.btn{border:0;cursor:pointer;font:500 1.05rem 'Frank Ruhl Libre',serif;color:#F1E6C9;background:var(--gg);padding:3px 22px;border-radius:99px}
+.btn:disabled{filter:grayscale(.8)}
+.btn.ghost{background:transparent;color:var(--gold);border:1px solid var(--gold)}
+.btn.del{background:transparent;color:#A3281C;border:1px solid #A3281C}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.item{border-top:1px solid var(--line);padding:12px 0}
+.item:first-child{border-top:0}
+.head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.head b{font-size:1.25rem;font-weight:500}
+.meta{color:var(--dim);font-size:.98rem}
+.badge{border-radius:99px;padding:0 12px;font-size:.9rem}
+.s-חדשה{background:#e4eefc;color:#1a4fa0}.s-בוצעה{background:#dff3e4;color:#17692e}.s-בוטלה{background:#f6dcd8;color:#A3281C}
+.hidden{display:none}.err{color:#A3281C}
+a{color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1 class="gold" id="title">לוח בקרה</h1>
+<div class="nav"><a href="index.html">לאתר</a><a href="orders.html">הזמנות</a><a href="admin.html">מוצרים והגדרות</a></div>
+
+<section class="panel" id="login">
+  <h2>כניסה</h2>
+  <label for="pw">סיסמה</label><input type="password" id="pw" autocomplete="current-password">
+  <div class="row"><button class="btn" id="enter">כניסה</button></div>
+  <div class="meta err" id="loginErr" style="margin-top:8px"></div>
+</section>
+
+<div id="app" class="hidden">
+  <div class="kpis" id="kpis"></div>
+
+  <section class="panel">
+    <h2 class="gold">הזמנות אחרונות</h2>
+    <div id="recent"></div>
+  </section>
+
+  <section class="panel">
+    <h2 class="gold">לקוחות</h2>
+    <div class="row" style="margin:0 0 8px">
+      <button class="btn" id="newC">+ הוספת לקוח</button>
+      <input id="q" placeholder="חיפוש לפי שם, טלפון או מייל" style="max-width:300px">
+    </div>
+    <div id="cform" class="hidden" style="border:1px dashed var(--gold);border-radius:16px;padding:6px 16px 16px;margin:10px 0">
+      <div class="two">
+        <div><label for="c_name">שם</label><input id="c_name"></div>
+        <div><label for="c_phone">טלפון</label><input id="c_phone" dir="ltr"></div>
+        <div><label for="c_email">מייל</label><input id="c_email" dir="ltr"></div>
+      </div>
+      <label for="c_notes">הערות על הלקוח</label><textarea id="c_notes" rows="2"></textarea>
+      <div class="row"><button class="btn" id="saveC">שמור</button><button class="btn ghost" id="cancelC">ביטול</button></div>
+      <div class="meta err" id="cStatus"></div>
+    </div>
+    <div id="clist"></div>
+  </section>
+</div>
+</div>
+
+<script>
+/* הדביקו כאן את כתובת ה-Web App (מסתיימת ב-/exec) */
+const SCRIPT_URL = "";
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money = n => "₪" + Math.round(Number(n)).toLocaleString("he-IL");
+const digits = p => String(p || "").replace(/\D/g, "");
+let password = "", D = { orders: [], products: [], customers: [], settings: {} }, editId = "";
+
+async function api(p){ return (await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ ...p, password }) })).json(); }
+function errText(r){
+  if (r.error === "locked") return "יותר מדי ניסיונות. הניהול נעול לעוד " + r.minutes + " דקות.";
+  if (r.error === "auth") return "סיסמה שגויה.";
+  if (r.error === "admin_disabled" || r.error === "disabled") return "המערכת הושבתה מתוך הסקריפט.";
+  if (r.error === "unknown") return "הסקריפט בגוגל בגרסה ישנה. הדביקו את הקוד החדש ופרסו גרסה חדשה.";
+  return "הפעולה נכשלה, נסו שוב.";
+}
+
+$("enter").onclick = async () => {
+  if (!SCRIPT_URL) { $("loginErr").textContent = "עדיין לא הוגדר SCRIPT_URL בקובץ."; return; }
+  password = $("pw").value; $("loginErr").textContent = "בודק...";
+  try {
+    const r = await api({ action: "dashboard" });
+    if (r.error) { $("loginErr").textContent = errText(r); return; }
+    D = r; if (D.settings && D.settings.businessName) $("title").textContent = "לוח בקרה · " + D.settings.businessName;
+    $("login").classList.add("hidden"); $("app").classList.remove("hidden"); render();
+  } catch (e) { $("loginErr").textContent = "לא הצלחתי להתחבר. בדקו את כתובת ה-Web App."; }
+};
+$("pw").addEventListener("keydown", e => { if (e.key === "Enter") $("enter").click(); });
+
+function customers(){
+  const map = {}, key = (n, p) => digits(p) || "n:" + String(n || "").trim().toLowerCase();
+  D.customers.forEach(c => { map[key(c.name, c.phone)] = { ...c, manual: true, orders: 0, spent: 0, last: "" }; });
+  D.orders.forEach(o => {
+    if (!o.name && !o.phone) return;
+    const c = map[key(o.name, o.phone)] || (map[key(o.name, o.phone)] = { id: "", name: o.name, phone: o.phone, email: o.email, notes: "", manual: false, orders: 0, spent: 0, last: "" });
+    c.orders++; if (o.status === "בוצעה") c.spent += o.sold || 0;
+    if (!c.last || o.date > c.last) c.last = o.date; if (!c.email) c.email = o.email;
+  });
+  return Object.values(map).sort((a, b) => b.spent - a.spent || b.orders - a.orders);
+}
+
+function render(){
+  const O = D.orders, done = O.filter(o => o.status === "בוצעה");
+  const sum = done.reduce((a, o) => a + (o.sold || 0), 0);
+  const ym = new Date().toISOString().slice(0, 7);
+  const month = done.filter(o => (o.delivered || o.date).slice(0, 7) === ym).reduce((a, o) => a + (o.sold || 0), 0);
+  const k = [[O.filter(o => o.status === "חדשה").length, "הזמנות חדשות"], [done.length, "בוצעו"], [O.filter(o => o.status === "בוטלה").length, "בוטלו"],
+    [money(sum), "סה״כ מכירות"], [money(month), "מכירות החודש"], [done.length ? money(sum / done.length) : "—", "ממוצע להזמנה"],
+    [D.products.length, "מוצרים באתר"], [customers().length, "לקוחות"]];
+  $("kpis").innerHTML = k.map(x => `<div class="kpi"><b>${x[0]}</b><span>${x[1]}</span></div>`).join("");
+  $("recent").innerHTML = O.slice(0, 5).map(o => `<div class="item"><div class="head"><b>${esc(o.name || "ללא שם")}</b><span class="badge s-${esc(o.status)}">${esc(o.status)}</span></div>
+    <div class="meta">${esc(o.date)} · ${esc(o.source)}${o.sold !== null ? " · נמכר ב-" + money(o.sold) : ""}</div></div>`).join("") || "<p class='meta'>אין הזמנות עדיין.</p>";
+  const q = $("q").value.trim().toLowerCase();
+  const list = customers().filter(c => !q || (c.name + " " + c.phone + " " + c.email).toLowerCase().includes(q));
+  $("clist").innerHTML = list.map((c, i) => `<div class="item"><div class="head"><b>${esc(c.name || "ללא שם")}</b>
+    <span class="meta">${c.orders} הזמנות · ${money(c.spent)}</span></div>
+    <div class="meta">${c.phone ? `<a href="tel:${esc(c.phone)}" dir="ltr">${esc(c.phone)}</a>` : ""}${c.email ? " · " + esc(c.email) : ""}${c.last ? " · הזמנה אחרונה: " + esc(c.last.slice(0, 10)) : ""}</div>
+    ${c.notes ? `<div class="meta">${esc(c.notes)}</div>` : ""}
+    <div class="row"><button class="btn ghost" data-i="${i}" data-a="edit">${c.manual ? "עריכה" : "שמירה ברשימה"}</button>
+    ${c.manual ? `<button class="btn del" data-i="${i}" data-a="del">מחיקה</button>` : ""}</div></div>`).join("") || "<p class='meta'>אין לקוחות להצגה.</p>";
+  window.__list = list;
+}
+$("q").addEventListener("input", render);
+
+function openC(c){
+  editId = c && c.manual ? c.id : "";
+  $("c_name").value = c ? c.name : ""; $("c_phone").value = c ? c.phone : ""; $("c_email").value = c ? c.email : ""; $("c_notes").value = c ? c.notes : "";
+  $("cStatus").textContent = ""; $("cform").classList.remove("hidden"); $("cform").scrollIntoView();
+}
+$("newC").onclick = () => openC(null);
+$("cancelC").onclick = () => $("cform").classList.add("hidden");
+
+$("clist").addEventListener("click", async e => {
+  const a = e.target.dataset.a; if (!a) return;
+  const c = window.__list[Number(e.target.dataset.i)];
+  if (a === "edit") openC(c);
+  if (a === "del" && confirm("למחוק את הלקוח מהרשימה? ההזמנות שלו לא יימחקו.")) {
+    try { const r = await api({ action: "customerDelete", id: c.id }); if (r.error) throw r; D.customers = r.customers; render(); } catch (x) { alert(errText(x || {})); }
+  }
+});
+
+$("saveC").onclick = async () => {
+  if (!$("c_name").value.trim() && !$("c_phone").value.trim()) { $("cStatus").textContent = "נא למלא שם או טלפון."; return; }
+  $("saveC").disabled = true; $("cStatus").textContent = "שומר...";
+  try {
+    const r = await api({ action: "customerSave", customer: { id: editId, name: $("c_name").value.trim(), phone: $("c_phone").value.trim(),
+      email: $("c_email").value.trim(), notes: $("c_notes").value.trim() } });
+    if (r.error) throw r;
+    D.customers = r.customers; render(); $("cform").classList.add("hidden");
+  } catch (e) { $("cStatus").textContent = errText(e || {}); }
+  $("saveC").disabled = false;
+};
+</script>
+</body>
+</html>
