@@ -4,23 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>ניהול מוצרים</title>
+<title>ניהול</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f3f6f7;--ink:#14262e;--mute:#5d7079;--line:#d9e2e6;--acc:#0e6b6b;--acc2:#0a4f4f;--soft:#e3f0ef;--red:#b3261e}
 *{box-sizing:border-box}
 body{margin:0;font-family:Heebo,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
-header{background:var(--ink);color:#fff;padding:24px 20px}
-header h1{margin:0 auto;max-width:800px;font-size:28px;font-weight:800}
+header{background:var(--ink);color:#fff;padding:22px 20px}
+header h1{margin:0 auto;max-width:800px;font-size:26px;font-weight:800}
 main{max-width:800px;margin:0 auto;padding:20px 16px}
 .panel{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:18px}
-.panel h2{margin:0 0 8px;font-size:22px}
+.panel h2{margin:0 0 8px;font-size:21px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0 14px}
 label{display:block;font-weight:500;margin:12px 0 4px}
-input[type=text],input[type=password],input[type=number]{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;font:inherit}
-button:focus-visible,input:focus-visible{outline:3px solid #f0b429;outline-offset:2px}
+input[type=text],input[type=password],input[type=number],textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #f0b429;outline-offset:2px}
 .btn{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:11px 22px;font:700 16px Heebo,Arial,sans-serif;cursor:pointer}
-.btn:hover{background:var(--acc2)}
-.btn:disabled{background:#9db3b3}
+.btn:hover{background:var(--acc2)}.btn:disabled{background:#9db3b3}
 .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
 .btn.del{background:#fff;color:var(--red);border:1px solid var(--red)}
 .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
@@ -28,33 +28,39 @@ button:focus-visible,input:focus-visible{outline:3px solid #f0b429;outline-offse
 .item:last-child{border-bottom:0}
 .thumb{width:64px;height:64px;border-radius:8px;background:var(--soft);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--acc);overflow:hidden;flex:none}
 .thumb img{width:100%;height:100%;object-fit:cover}
-.grow{flex:1;min-width:0}
-.grow b{display:block;font-size:18px}
-.grow span{color:var(--mute)}
-.status{margin-top:12px;color:var(--mute)}
-.err{color:var(--red)}
+.grow{flex:1;min-width:0}.grow b{display:block;font-size:18px}.grow span{color:var(--mute)}
+.status{margin-top:12px;color:var(--mute)}.err{color:var(--red)}
 .hidden{display:none}
-#preview{width:96px;height:96px;object-fit:cover;border-radius:8px;margin-top:8px}
+.prev{max-height:80px;margin-top:8px;background:#fff;border:1px solid var(--line);padding:6px;border-radius:8px}
+small{color:var(--mute)}
 </style>
 </head>
 <body>
-<header><h1>ניהול מוצרים</h1></header>
+<header><h1>ניהול החנות</h1></header>
 <main>
 
 <section class="panel" id="login">
   <h2>כניסה</h2>
-  <label for="pw">סיסמה</label>
-  <input type="password" id="pw" autocomplete="current-password">
+  <label for="pw">סיסמה</label><input type="password" id="pw" autocomplete="current-password">
   <div class="row"><button class="btn" id="enter">כניסה</button></div>
   <div class="status err" id="loginErr"></div>
 </section>
 
 <div id="app" class="hidden">
   <section class="panel">
-    <h2>פרטי העסק</h2>
-    <label for="bname">שם העסק</label><input type="text" id="bname">
+    <h2>פרטי העסק ויצירת קשר</h2>
+    <small>כל שדה שמולא יופיע באתר. שדה ריק לא יוצג.</small>
+    <div class="two">
+      <div><label for="s_businessName">שם העסק</label><input type="text" id="s_businessName"></div>
+      <div><label for="s_tagline">משפט קצר מתחת לשם</label><input type="text" id="s_tagline"></div>
+      <div><label for="s_phone">טלפון</label><input type="text" id="s_phone" dir="ltr"></div>
+      <div><label for="s_whatsapp">וואטסאפ</label><input type="text" id="s_whatsapp" dir="ltr"></div>
+      <div><label for="s_email">מייל ליצירת קשר</label><input type="text" id="s_email" dir="ltr"></div>
+      <div><label for="s_address">כתובת</label><input type="text" id="s_address"></div>
+    </div>
+    <label for="s_hours">שעות פעילות</label><input type="text" id="s_hours">
     <label for="blogo">לוגו</label><input type="file" id="blogo" accept="image/*">
-    <img id="logoPrev" class="hidden" alt="לוגו" style="max-height:80px;margin-top:8px;background:#fff;border:1px solid var(--line);padding:6px;border-radius:8px">
+    <img id="logoPrev" class="prev hidden" alt="לוגו">
     <div class="row">
       <button class="btn" id="saveBiz">שמור פרטי עסק</button>
       <button class="btn ghost hidden" id="rmLogo">הסר לוגו</button>
@@ -64,10 +70,13 @@ button:focus-visible,input:focus-visible{outline:3px solid #f0b429;outline-offse
 
   <section class="panel">
     <h2 id="formTitle">הוספת מוצר</h2>
-    <label for="pname">שם המוצר</label><input type="text" id="pname">
-    <label for="pprice">מחיר (₪)</label><input type="number" id="pprice" min="0" step="0.01" inputmode="decimal">
+    <div class="two">
+      <div><label for="pname">שם המוצר *</label><input type="text" id="pname"></div>
+      <div><label for="pprice">מחיר (₪)</label><input type="number" id="pprice" min="0" step="0.01" inputmode="decimal"><small>ריק = "מחיר בתיאום"</small></div>
+    </div>
+    <label for="pdesc">תיאור קצר</label><textarea id="pdesc" rows="2"></textarea>
     <label for="pfile">תמונה</label><input type="file" id="pfile" accept="image/*">
-    <img id="preview" class="hidden" alt="תצוגה מקדימה">
+    <img id="preview" class="prev hidden" alt="תצוגה מקדימה">
     <div class="row">
       <button class="btn" id="save">שמור מוצר</button>
       <button class="btn ghost hidden" id="cancel">ביטול עריכה</button>
@@ -83,96 +92,28 @@ button:focus-visible,input:focus-visible{outline:3px solid #f0b429;outline-offse
 </main>
 
 <script>
-/* הדביקו כאן את אותה כתובת Web App שהדבקתם ב-index.html */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQdioxBCE2eruy1V_yr3rh_mfQ6Ik5TesSzPkFu1eUCJFqxARJyGSkVf5A2r2LAQkluQ/exec";
+/* הדביקו כאן את אותה כתובת Web App (מסתיימת ב-/exec) שהדבקתם ב-index.html */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBIIR5pjjwrz5_zJukrA87wRF4XOfr5ewFmMUvY40FadVT4EABXZp_mMnrLd6LN5B-lQ/exec";
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let password = "", products = [], editId = "", editImage = "";
+const KEYS = ["businessName","tagline","phone","whatsapp","email","address","hours"];
+let password = "", products = [], settings = {}, editId = "", editImage = "", newLogo = null, logoRemoved = false;
 
 async function api(payload){
   const r = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ ...payload, password }) });
   return r.json();
 }
-function say(t, bad){ $("status").textContent = t; $("status").className = "status" + (bad ? " err" : ""); }
-
-$("enter").onclick = async () => {
-  if (!SCRIPT_URL) { $("loginErr").textContent = "עדיין לא הוגדר SCRIPT_URL בקובץ."; return; }
-  password = $("pw").value;
-  $("loginErr").textContent = "בודק...";
-  try {
-    const r = await api({ action: "list" });
-    if (r.error) { $("loginErr").textContent = "סיסמה שגויה."; return; }
-    products = r.products; settings = r.settings || {}; fillBiz(); $("login").classList.add("hidden"); $("app").classList.remove("hidden"); render();
-  } catch (e) { $("loginErr").textContent = "לא הצלחתי להתחבר. בדקו את כתובת ה-Web App."; }
-};
-$("pw").addEventListener("keydown", e => { if (e.key === "Enter") $("enter").click(); });
-
-function render(){
-  $("list").innerHTML = products.length ? products.map(p => `
-    <div class="item">
-      <div class="thumb">${p.image ? `<img src="${esc(p.image)}" alt="">` : esc(p.name.slice(0,2))}</div>
-      <div class="grow"><b>${esc(p.name)}</b><span>₪${p.price}</span></div>
-      <button class="btn ghost" data-edit="${esc(p.id)}">עריכה</button>
-      <button class="btn del" data-del="${esc(p.id)}">מחיקה</button>
-    </div>`).join("") : "<p>אין מוצרים עדיין. הוסיפו את הראשון למעלה.</p>";
+function errText(r){
+  if (r.error === "locked") return "יותר מדי ניסיונות. הניהול נעול לעוד " + r.minutes + " דקות.";
+  if (r.error === "auth") return "סיסמה שגויה.";
+  if (r.error === "admin_disabled") return "דף הניהול הושבת מתוך הסקריפט.";
+  if (r.error === "disabled") return "המערכת מושבתת מתוך הסקריפט.";
+  if (r.error === "unknown") return "הסקריפט בגוגל בגרסה ישנה. הדביקו את הקוד החדש ופרסו גרסה חדשה.";
+  return "הפעולה נכשלה, נסו שוב.";
 }
-
-$("list").addEventListener("click", async e => {
-  const ed = e.target.dataset.edit, dl = e.target.dataset.del;
-  if (ed) {
-    const p = products.find(x => x.id === ed);
-    editId = p.id; editImage = p.image;
-    $("pname").value = p.name; $("pprice").value = p.price; $("pfile").value = "";
-    $("formTitle").textContent = "עריכת מוצר"; $("cancel").classList.remove("hidden");
-    if (p.image) { $("preview").src = p.image; $("preview").classList.remove("hidden"); } else $("preview").classList.add("hidden");
-    window.scrollTo(0, 0);
-  }
-  if (dl && confirm("למחוק את המוצר? הפעולה סופית.")) {
-    try { products = (await api({ action: "delete", id: dl })).products; render(); } catch (err) { say("המחיקה נכשלה, נסו שוב.", true); }
-  }
-});
-
-let settings = {}, newLogo = null, logoRemoved = false;
-function fillBiz(){
-  $("bname").value = settings.businessName || "";
-  if (settings.logo) { $("logoPrev").src = settings.logo; $("logoPrev").classList.remove("hidden"); $("rmLogo").classList.remove("hidden"); }
-}
-$("blogo").onchange = () => {
-  const f = $("blogo").files[0];
-  if (f) { newLogo = f; logoRemoved = false; $("logoPrev").src = URL.createObjectURL(f); $("logoPrev").classList.remove("hidden"); $("rmLogo").classList.remove("hidden"); }
-};
-$("rmLogo").onclick = () => {
-  newLogo = null; logoRemoved = true; $("blogo").value = "";
-  $("logoPrev").classList.add("hidden"); $("rmLogo").classList.add("hidden");
-};
-$("saveBiz").onclick = async () => {
-  $("saveBiz").disabled = true; $("bizStatus").textContent = "שומר...";
-  try {
-    const s = { businessName: $("bname").value.trim() };
-    if (newLogo) s.logo = (await api({ action: "upload", mime: "image/png", data: await shrink(newLogo, 400, "image/png") })).url;
-    else if (logoRemoved) s.logo = "";
-    const r = await api({ action: "saveSettings", settings: s });
-    if (r.error) throw 0;
-    settings = r.settings; newLogo = null; logoRemoved = false;
-    $("bizStatus").textContent = "נשמר. השינוי מופיע באתר.";
-  } catch (e) { $("bizStatus").textContent = "השמירה נכשלה, נסו שוב."; }
-  $("saveBiz").disabled = false;
-};
-
-function reset(){
-  editId = ""; editImage = ""; $("pname").value = ""; $("pprice").value = ""; $("pfile").value = "";
-  $("preview").classList.add("hidden"); $("formTitle").textContent = "הוספת מוצר"; $("cancel").classList.add("hidden");
-}
-$("cancel").onclick = () => { reset(); say(""); };
-
-$("pfile").onchange = () => {
-  const f = $("pfile").files[0];
-  if (f) { $("preview").src = URL.createObjectURL(f); $("preview").classList.remove("hidden"); }
-};
-
-// מקטין תמונה לרוחב 800 פיקסלים ומחזיר base64 (בלי הקידומת)
-function shrink(file, max = 800, type = "image/jpeg"){
+function say(id, t, bad){ $(id).textContent = t; $(id).className = "status" + (bad ? " err" : ""); }
+function shrink(file, max, type){
   return new Promise((res, rej) => {
     const img = new Image();
     img.onload = () => {
@@ -185,18 +126,84 @@ function shrink(file, max = 800, type = "image/jpeg"){
   });
 }
 
+$("enter").onclick = async () => {
+  if (!SCRIPT_URL) { $("loginErr").textContent = "עדיין לא הוגדר SCRIPT_URL בקובץ."; return; }
+  password = $("pw").value; $("loginErr").textContent = "בודק...";
+  try {
+    const r = await api({ action: "list" });
+    if (r.error) { $("loginErr").textContent = errText(r); return; }
+    products = r.products; settings = r.settings || {}; fillBiz();
+    $("login").classList.add("hidden"); $("app").classList.remove("hidden"); render();
+  } catch (e) { $("loginErr").textContent = "לא הצלחתי להתחבר. בדקו את כתובת ה-Web App."; }
+};
+$("pw").addEventListener("keydown", e => { if (e.key === "Enter") $("enter").click(); });
+
+function fillBiz(){
+  KEYS.forEach(k => $("s_" + k).value = settings[k] || "");
+  if (settings.logo) { $("logoPrev").src = settings.logo; $("logoPrev").classList.remove("hidden"); $("rmLogo").classList.remove("hidden"); }
+}
+$("blogo").onchange = () => {
+  const f = $("blogo").files[0];
+  if (f) { newLogo = f; logoRemoved = false; $("logoPrev").src = URL.createObjectURL(f); $("logoPrev").classList.remove("hidden"); $("rmLogo").classList.remove("hidden"); }
+};
+$("rmLogo").onclick = () => { newLogo = null; logoRemoved = true; $("blogo").value = ""; $("logoPrev").classList.add("hidden"); $("rmLogo").classList.add("hidden"); };
+
+$("saveBiz").onclick = async () => {
+  $("saveBiz").disabled = true; say("bizStatus", "שומר...");
+  try {
+    const s = {}; KEYS.forEach(k => s[k] = $("s_" + k).value.trim());
+    if (newLogo) { const u = await api({ action: "upload", mime: "image/png", data: await shrink(newLogo, 400, "image/png") }); if (u.error) throw u; s.logo = u.url; }
+    else if (logoRemoved) s.logo = "";
+    const r = await api({ action: "saveSettings", settings: s });
+    if (r.error) throw r;
+    settings = r.settings; newLogo = null; logoRemoved = false; say("bizStatus", "נשמר. השינוי מופיע באתר.");
+  } catch (e) { say("bizStatus", errText(e || {}), true); }
+  $("saveBiz").disabled = false;
+};
+
+function render(){
+  $("list").innerHTML = products.length ? products.map(p => `
+    <div class="item">
+      <div class="thumb">${p.image ? `<img src="${esc(p.image)}" alt="">` : esc(p.name.charAt(0))}</div>
+      <div class="grow"><b>${esc(p.name)}</b><span>${p.price === null ? "מחיר בתיאום" : "₪" + p.price}</span></div>
+      <button class="btn ghost" data-edit="${esc(p.id)}">עריכה</button>
+      <button class="btn del" data-del="${esc(p.id)}">מחיקה</button>
+    </div>`).join("") : "<p>אין מוצרים עדיין. הוסיפו את הראשון למעלה.</p>";
+}
+$("list").addEventListener("click", async e => {
+  const ed = e.target.dataset.edit, dl = e.target.dataset.del;
+  if (ed) {
+    const p = products.find(x => x.id === ed);
+    editId = p.id; editImage = p.image; $("pname").value = p.name; $("pprice").value = p.price === null ? "" : p.price;
+    $("pdesc").value = p.description; $("pfile").value = "";
+    $("formTitle").textContent = "עריכת מוצר"; $("cancel").classList.remove("hidden");
+    if (p.image) { $("preview").src = p.image; $("preview").classList.remove("hidden"); } else $("preview").classList.add("hidden");
+    $("formTitle").scrollIntoView();
+  }
+  if (dl && confirm("למחוק את המוצר? הפעולה סופית.")) {
+    try { const r = await api({ action: "delete", id: dl }); if (r.error) throw r; products = r.products; render(); }
+    catch (err) { say("status", errText(err || {}), true); }
+  }
+});
+function reset(){
+  editId = ""; editImage = ""; ["pname","pprice","pdesc","pfile"].forEach(i => $(i).value = "");
+  $("preview").classList.add("hidden"); $("formTitle").textContent = "הוספת מוצר"; $("cancel").classList.add("hidden");
+}
+$("cancel").onclick = () => { reset(); say("status", ""); };
+$("pfile").onchange = () => { const f = $("pfile").files[0]; if (f) { $("preview").src = URL.createObjectURL(f); $("preview").classList.remove("hidden"); } };
+
 $("save").onclick = async () => {
   const name = $("pname").value.trim(), price = $("pprice").value;
-  if (!name || price === "" || Number(price) < 0) return say("נא למלא שם ומחיר.", true);
-  $("save").disabled = true; say("שומר...");
+  if (!name) return say("status", "נא למלא שם מוצר.", true);
+  if (price !== "" && Number(price) < 0) return say("status", "המחיר לא תקין.", true);
+  $("save").disabled = true; say("status", "שומר...");
   try {
-    let image = editImage;
-    const f = $("pfile").files[0];
-    if (f) { say("מעלה תמונה..."); image = (await api({ action: "upload", data: await shrink(f) })).url; }
-    const r = await api({ action: "save", product: { id: editId, name, price: Number(price), image } });
-    if (r.error) throw 0;
-    products = r.products; render(); reset(); say("נשמר. המוצר מופיע באתר.");
-  } catch (e) { say("השמירה נכשלה, נסו שוב.", true); }
+    let image = editImage; const f = $("pfile").files[0];
+    if (f) { say("status", "מעלה תמונה..."); const u = await api({ action: "upload", data: await shrink(f, 800, "image/jpeg") }); if (u.error) throw u; image = u.url; }
+    const r = await api({ action: "save", product: { id: editId, name, price, description: $("pdesc").value.trim(), image } });
+    if (r.error) throw r;
+    products = r.products; render(); reset(); say("status", "נשמר. המוצר מופיע באתר.");
+  } catch (e) { say("status", errText(e || {}), true); }
   $("save").disabled = false;
 };
 </script>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>ניהול הזמנות</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f6f7;--ink:#14262e;--mute:#5d7079;--line:#d9e2e6;--acc:#0e6b6b;--acc2:#0a4f4f;--soft:#e3f0ef;--red:#b3261e}
+*{box-sizing:border-box}
+body{margin:0;font-family:Heebo,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:var(--ink);color:#fff;padding:22px 20px}
+header h1{margin:0 auto;max-width:900px;font-size:26px;font-weight:800}
+main{max-width:900px;margin:0 auto;padding:20px 16px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:16px}
+.panel h2{margin:0 0 8px;font-size:21px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 14px}
+label{display:block;font-weight:500;margin:10px 0 4px}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #f0b429;outline-offset:2px}
+.btn{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:9px 18px;font:700 15px Heebo,Arial,sans-serif;cursor:pointer}
+.btn:hover{background:var(--acc2)}.btn:disabled{background:#9db3b3}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.del{background:#fff;color:var(--red);border:1px solid var(--red)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.stat b{display:block;font-size:22px}.stat span{color:var(--mute);font-size:14px}
+.filters button{background:#fff;border:1px solid var(--line);border-radius:99px;padding:6px 16px;font:500 15px Heebo,Arial,sans-serif;cursor:pointer}
+.filters button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.head b{font-size:18px}
+.badge{border-radius:99px;padding:2px 12px;font-size:14px;font-weight:700}
+.s-חדשה{background:#e4eefc;color:#1a4fa0}.s-בוצעה{background:#dff3e4;color:#17692e}.s-בוטלה{background:#f6e0de;color:var(--red)}
+.src{background:var(--soft);color:var(--acc);border-radius:6px;padding:0 8px;font-size:13px}
+.items{white-space:pre-wrap;margin:8px 0;padding:8px 10px;background:var(--bg);border-radius:8px}
+.meta{color:var(--mute);font-size:15px}
+.hidden{display:none}.err{color:var(--red)}.status{margin-top:10px;color:var(--mute)}
+a{color:var(--acc)}
+</style>
+</head>
+<body>
+<header><h1>ניהול הזמנות</h1></header>
+<main>
+
+<section class="panel" id="login">
+  <h2>כניסה</h2>
+  <label for="pw">סיסמה</label><input type="password" id="pw" autocomplete="current-password">
+  <div class="row"><button class="btn" id="enter">כניסה</button></div>
+  <div class="status err" id="loginErr"></div>
+</section>
+
+<div id="app" class="hidden">
+  <div class="stats" id="stats"></div>
+
+  <section class="panel hidden" id="formBox">
+    <h2 id="formTitle">הזמנה ידנית</h2>
+    <div class="two">
+      <div><label for="f_name">שם הלקוח</label><input id="f_name"></div>
+      <div><label for="f_phone">טלפון</label><input id="f_phone" dir="ltr"></div>
+      <div><label for="f_email">מייל</label><input id="f_email" dir="ltr"></div>
+      <div><label for="f_status">סטטוס</label>
+        <select id="f_status"><option>חדשה</option><option>בוצעה</option><option>בוטלה</option></select></div>
+      <div><label for="f_delivered">תאריך מסירה ללקוח</label><input type="date" id="f_delivered"></div>
+      <div><label for="f_sold">מחיר שנמכר ללקוח (₪)</label><input type="number" id="f_sold" min="0" step="0.01" inputmode="decimal"></div>
+    </div>
+    <label for="f_items">מה הוזמן</label><textarea id="f_items" rows="3"></textarea>
+    <label for="f_notes">הערות</label><textarea id="f_notes" rows="2"></textarea>
+    <div class="row"><button class="btn" id="saveOrder">שמור</button><button class="btn ghost" id="cancelForm">ביטול</button></div>
+    <div class="status" id="formStatus"></div>
+  </section>
+
+  <div class="row" style="margin:0 0 12px">
+    <button class="btn" id="newOrder">+ הזמנה ידנית</button>
+    <input id="q" placeholder="חיפוש לפי שם, טלפון או מוצר" style="max-width:300px">
+  </div>
+  <div class="row filters" id="filters" style="margin:0 0 14px">
+    <button data-f="all" class="on">הכול</button><button data-f="חדשה">חדשות</button>
+    <button data-f="בוצעה">בוצעו</button><button data-f="בוטלה">בוטלו</button>
+  </div>
+  <div id="list"></div>
+  <div class="status" id="status"></div>
+</div>
+</main>
+
+<script>
+/* הדביקו כאן את אותה כתובת Web App (מסתיימת ב-/exec) */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBIIR5pjjwrz5_zJukrA87wRF4XOfr5ewFmMUvY40FadVT4EABXZp_mMnrLd6LN5B-lQ/exec";
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money = n => "₪" + Number(n).toLocaleString("he-IL");
+const dfmt = s => s ? s.split("-").reverse().join("/") : "";
+const today = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+let password = "", orders = [], filter = "all", editId = "";
+
+async function api(p){ return (await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ ...p, password }) })).json(); }
+function errText(r){
+  if (r.error === "locked") return "יותר מדי ניסיונות. הניהול נעול לעוד " + r.minutes + " דקות.";
+  if (r.error === "auth") return "סיסמה שגויה.";
+  if (r.error === "admin_disabled" || r.error === "disabled") return "המערכת הושבתה מתוך הסקריפט.";
+  if (r.error === "unknown") return "הסקריפט בגוגל בגרסה ישנה. הדביקו את הקוד החדש ופרסו גרסה חדשה.";
+  return "הפעולה נכשלה, נסו שוב.";
+}
+
+$("enter").onclick = async () => {
+  if (!SCRIPT_URL) { $("loginErr").textContent = "עדיין לא הוגדר SCRIPT_URL בקובץ."; return; }
+  password = $("pw").value; $("loginErr").textContent = "בודק...";
+  try {
+    const r = await api({ action: "orders" });
+    if (r.error) { $("loginErr").textContent = errText(r); return; }
+    orders = r.orders; $("login").classList.add("hidden"); $("app").classList.remove("hidden"); render();
+  } catch (e) { $("loginErr").textContent = "לא הצלחתי להתחבר. בדקו את כתובת ה-Web App."; }
+};
+$("pw").addEventListener("keydown", e => { if (e.key === "Enter") $("enter").click(); });
+
+function render(){
+  const cnt = s => orders.filter(o => o.status === s).length;
+  const sum = orders.filter(o => o.status === "בוצעה").reduce((a, o) => a + (o.sold || 0), 0);
+  $("stats").innerHTML = `<div class="stat"><b>${cnt("חדשה")}</b><span>חדשות</span></div><div class="stat"><b>${cnt("בוצעה")}</b><span>בוצעו</span></div>
+    <div class="stat"><b>${cnt("בוטלה")}</b><span>בוטלו</span></div><div class="stat"><b>${money(sum)}</b><span>סה״כ מכירות שבוצעו</span></div>`;
+  const q = $("q").value.trim().toLowerCase();
+  const list = orders.filter(o => (filter === "all" || o.status === filter) && (!q || (o.name + " " + o.phone + " " + o.items).toLowerCase().includes(q)));
+  $("list").innerHTML = list.length ? list.map(o => `
+    <div class="card">
+      <div class="head"><div><b>${esc(o.name || "ללא שם")}</b> <span class="src">${esc(o.source)}</span></div>
+        <span class="badge s-${esc(o.status)}">${esc(o.status)}</span></div>
+      <div class="meta">${esc(o.date)}${o.phone ? ` · <a href="tel:${esc(o.phone)}" dir="ltr">${esc(o.phone)}</a>` : ""}${o.email ? ` · ${esc(o.email)}` : ""}</div>
+      <div class="items">${esc(o.items)}</div>
+      ${o.notes ? `<div class="meta">הערות: ${esc(o.notes)}</div>` : ""}
+      <div class="meta">${o.total ? "סכום לפי האתר: " + money(o.total) + " · " : ""}${o.sold !== null ? "נמכר ב-" + money(o.sold) : "מחיר מכירה: לא הוזן"}${o.delivered ? " · נמסר ב-" + dfmt(o.delivered) : ""}</div>
+      <div class="row">
+        <button class="btn" data-act="edit" data-id="${esc(o.id)}">עריכה</button>
+        ${o.status === "חדשה" ? `<button class="btn" data-act="done" data-id="${esc(o.id)}">סמן כבוצעה</button>` : ""}
+        ${o.status !== "בוטלה" ? `<button class="btn ghost" data-act="cancel" data-id="${esc(o.id)}">ביטול הזמנה</button>` : ""}
+        <button class="btn del" data-act="del" data-id="${esc(o.id)}">מחיקה</button>
+      </div>
+    </div>`).join("") : "<p>אין הזמנות להצגה.</p>";
+}
+
+$("filters").addEventListener("click", e => {
+  const f = e.target.dataset.f; if (!f) return;
+  filter = f; document.querySelectorAll("#filters button").forEach(b => b.classList.toggle("on", b.dataset.f === f)); render();
+});
+$("q").addEventListener("input", render);
+
+function openForm(o){
+  editId = o ? o.id : "";
+  $("formTitle").textContent = o ? "עריכת הזמנה" : "הזמנה ידנית";
+  $("f_name").value = o ? o.name : ""; $("f_phone").value = o ? o.phone : ""; $("f_email").value = o ? o.email : "";
+  $("f_status").value = o ? o.status : "חדשה"; $("f_delivered").value = o ? o.delivered : "";
+  $("f_sold").value = o && o.sold !== null ? o.sold : ""; $("f_items").value = o ? o.items : ""; $("f_notes").value = o ? o.notes : "";
+  $("formStatus").textContent = ""; $("formBox").classList.remove("hidden"); $("formBox").scrollIntoView();
+}
+$("newOrder").onclick = () => openForm(null);
+$("cancelForm").onclick = () => $("formBox").classList.add("hidden");
+
+function payload(o, over){ return { id: o.id, name: o.name, phone: o.phone, email: o.email, items: o.items, notes: o.notes,
+  status: o.status, delivered: o.delivered, sold: o.sold === null ? "" : o.sold, ...over }; }
+
+$("list").addEventListener("click", async e => {
+  const act = e.target.dataset.act, id = e.target.dataset.id; if (!act) return;
+  const o = orders.find(x => x.id === id);
+  try {
+    if (act === "edit") openForm(o);
+    if (act === "done") { openForm(o); $("f_status").value = "בוצעה"; if (!$("f_delivered").value) $("f_delivered").value = today(); $("f_sold").focus(); }
+    if (act === "cancel" && confirm("לסמן את ההזמנה כמבוטלת?")) {
+      const r = await api({ action: "orderSave", order: payload(o, { status: "בוטלה" }) }); if (r.error) throw r; orders = r.orders; render();
+    }
+    if (act === "del" && confirm("למחוק את ההזמנה לצמיתות? אם רק בוטלה, עדיף ללחוץ על ביטול הזמנה.")) {
+      const r = await api({ action: "orderDelete", id }); if (r.error) throw r; orders = r.orders; render();
+    }
+  } catch (err) { $("status").textContent = errText(err || {}); $("status").className = "status err"; }
+});
+
+$("saveOrder").onclick = async () => {
+  if (!$("f_name").value.trim() && !$("f_items").value.trim()) { $("formStatus").textContent = "נא למלא שם או מה הוזמן."; return; }
+  $("saveOrder").disabled = true; $("formStatus").textContent = "שומר...";
+  try {
+    const r = await api({ action: "orderSave", order: { id: editId, name: $("f_name").value.trim(), phone: $("f_phone").value.trim(),
+      email: $("f_email").value.trim(), items: $("f_items").value.trim(), notes: $("f_notes").value.trim(),
+      status: $("f_status").value, delivered: $("f_delivered").value, sold: $("f_sold").value } });
+    if (r.error) throw r;
+    orders = r.orders; render(); $("formBox").classList.add("hidden");
+  } catch (e) { $("formStatus").textContent = errText(e || {}); }
+  $("saveOrder").disabled = false;
+};
+</script>
+</body>
+</html>
