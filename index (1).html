@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>הזמנות</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--obs:#F1E6C9;--obs2:#E4D5AC;--glass:rgba(255,255,255,.4);--line:rgba(110,78,20,.35);--gold:#7A5A14;--gold-l:#6B4A10;--ivory:#2B1D10;--dim:#6B5A43;--wine:#7C2A3E;--gg:linear-gradient(120deg,#5C400C 0%,#96701F 40%,#6B4E12 60%,#4F360A 100%)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;font-family:'Frank Ruhl Libre',Georgia,serif;color:var(--ivory);font-size:19px;line-height:1.7;background-color:var(--obs);background-image:radial-gradient(900px 500px at 85% -5%,rgba(124,42,62,.10),transparent 60%),radial-gradient(800px 500px at 5% 25%,rgba(150,112,31,.16),transparent 60%),linear-gradient(180deg,rgba(255,255,255,.25),rgba(120,85,30,.10));background-repeat:no-repeat;padding-bottom:90px}
+h1,h2,h3{font-weight:500;margin:0}
+a{color:inherit}
+.gold{background:var(--gg);-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block;max-width:100%;padding:.05em .06em .26em;margin-bottom:-.16em}
+.wrap{max-width:1040px;margin:0 auto;padding:0 18px}
+[hidden]{display:none!important}
+.top{position:sticky;top:0;z-index:30;backdrop-filter:blur(14px);background:rgba(241,230,201,.9);border-bottom:1px solid var(--line)}
+.top .in{max-width:1040px;margin:0 auto;padding:8px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+.mono{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--gold);display:grid;place-items:center;font-size:1.3rem;color:var(--gold-l);overflow:hidden;background:#fff0}
+.mono img{width:100%;height:100%;object-fit:contain;background:#fff;padding:3px}
+.top nav{display:flex;gap:20px;align-items:center;font-size:1rem}
+.top nav a{text-decoration:none;color:var(--dim)}
+.top nav a:hover{color:var(--gold-l)}
+.pill{border:1px solid var(--gold);color:var(--gold-l)!important;padding:0 18px;border-radius:99px}
+@media(max-width:600px){.top nav a:not(.pill){display:none}}
+.hero{text-align:center;padding:64px 0 30px}
+.hero h1{font-size:clamp(2.8rem,11vw,6.2rem);line-height:1.12}
+.banner{margin:0 0 28px;border:1px solid var(--line);border-radius:24px;overflow:hidden;aspect-ratio:16/6;background:var(--obs2)}
+.banner img{width:100%;height:100%;object-fit:cover;display:block}
+.hero.hasb{padding-top:26px}
+.out .pic img{filter:grayscale(1);opacity:.55}
+.out h3,.out p,.out .price{opacity:.6}
+.soldout{margin-top:auto;padding-top:8px;color:#A3281C;font-size:1.25rem;font-weight:700}
+.role{font-size:clamp(1.15rem,3.5vw,1.7rem);color:var(--dim);margin-top:6px}
+.orn{display:flex;align-items:center;gap:12px;margin:22px auto;max-width:380px}
+.orn i{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.orn b{transform:rotate(45deg);width:9px;height:9px;border:1px solid var(--gold);display:block}
+.btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;border:0;cursor:pointer;font:500 1.2rem 'Frank Ruhl Libre',serif;text-decoration:none;color:var(--obs);background:var(--gg);padding:4px 34px;border-radius:99px;box-shadow:0 14px 34px -12px rgba(90,60,10,.45)}
+.btn:hover{filter:brightness(1.08)}
+.btn:disabled{filter:grayscale(.8);cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--gold-l);border:1px solid var(--gold);box-shadow:none}
+.sec{text-align:center;margin:60px 0 26px}
+.sec h2{font-size:clamp(2rem,6vw,3.2rem);line-height:1.2}
+.sec p{color:var(--dim);margin:2px 0 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:22px}
+.panel{position:relative;border:1px solid var(--line);border-radius:24px;background:linear-gradient(160deg,rgba(255,255,255,.55),rgba(255,255,255,.25));overflow:hidden;display:flex;flex-direction:column;transition:border-color .3s,transform .3s}
+.panel:hover{transform:translateY(-3px);border-color:rgba(110,78,20,.75)}
+.panel.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.pic{aspect-ratio:4/3;background:var(--obs2);display:grid;place-items:center;font-size:4rem;color:rgba(122,90,20,.45)}
+.pic img{width:100%;height:100%;object-fit:cover}
+.body{padding:18px 20px 22px;display:flex;flex-direction:column;gap:8px;flex:1}
+.body h3{font-size:1.7rem;line-height:1.2}
+.body p{margin:0;color:var(--dim);font-size:1rem}
+.price{color:var(--gold-l);font-size:1.2rem}
+.qty{display:flex;align-items:center;gap:12px;margin-top:auto;padding-top:8px}
+.qty button{width:44px;height:44px;border-radius:50%;border:1px solid var(--gold);background:var(--glass);color:var(--gold-l);font-size:1.5rem;cursor:pointer}
+.qty button:hover{background:rgba(214,182,110,.18)}
+.qty output{min-width:30px;text-align:center;font-size:1.4rem}
+.empty{grid-column:1/-1;text-align:center;color:var(--dim);padding:40px 10px;border:1px dashed var(--line);border-radius:20px}
+.send{margin-top:60px;padding:38px 24px;border-radius:28px;border:1px solid var(--gold);background:linear-gradient(160deg,rgba(124,42,62,.10),rgba(255,255,255,.4) 60%)}
+.send .sec{margin:0 0 22px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-bottom:14px}
+label{display:block;font-size:1rem;color:var(--gold-l);margin-bottom:2px}
+input[type=text],input[type=tel],input[type=email],textarea{width:100%;font:1.05rem 'Frank Ruhl Libre',serif;color:var(--ivory);background:rgba(255,255,255,.6);border:1px solid var(--line);border-radius:12px;padding:8px 14px}
+::placeholder{color:#7a6a50}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.ltr{direction:ltr;text-align:right}
+.summary{border:1px dashed var(--gold);border-radius:14px;padding:10px 16px;margin:16px 0;color:var(--gold-l)}
+.summary div{display:flex;justify-content:space-between;gap:12px}
+.chk{display:flex;gap:10px;align-items:flex-start;margin:14px 0;color:var(--ivory)}
+.chk input{width:20px;height:20px;margin-top:6px;accent-color:var(--gold)}
+.err{color:#A3281C;text-align:center;min-height:1.7em}
+.send .btn{width:100%;font-size:1.35rem}
+.hp{position:absolute;left:-9999px}
+.done{text-align:center;padding:30px 10px}
+.contact{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.cbox{border:1px solid var(--line);border-radius:18px;background:var(--glass);padding:16px 20px;text-align:center}
+.cbox small{display:block;color:var(--gold);font-size:.95rem}
+.cbox a{text-decoration:none}
+footer{text-align:center;padding:44px 0 20px;color:var(--dim)}
+.bar{position:fixed;inset:auto 0 0 0;z-index:40;background:rgba(241,230,201,.95);backdrop-filter:blur(12px);border-top:1px solid var(--gold);padding:10px 16px}
+.bar>div{max-width:1040px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.bar .btn{padding:2px 24px;font-size:1.1rem}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <div class="brand"><span class="mono" id="mono" hidden></span><span class="gold" id="brandName" style="font-size:1.25rem">שם העסק</span></div>
+  <nav><a href="#catalog">מוצרים</a><a href="#contact" id="navContact" hidden>יצירת קשר</a><a class="pill" href="#order">להזמנה</a></nav>
+</div></header>
+
+<main class="wrap" id="top">
+  <section class="hero">
+    <div class="banner" id="banner" hidden><img id="bannerImg" alt=""></div>
+    <h1 class="gold" id="biz">שם העסק</h1>
+    <div class="role" id="tagline" hidden></div>
+    <div class="orn"><i></i><b></b><i></i></div>
+    <div class="btns"><a class="btn" href="#catalog">למוצרים</a><a class="btn ghost" id="heroPhone" hidden dir="ltr"></a></div>
+  </section>
+
+  <section id="catalog">
+    <div class="sec"><h2 class="gold">המוצרים שלנו</h2><p>בחרו כמות ליד כל מוצר ועברו להזמנה</p></div>
+    <div class="grid" id="grid"><div class="empty">טוען מוצרים...</div></div>
+  </section>
+
+  <section class="send" id="order">
+    <div id="formBox">
+      <div class="sec"><h2 class="gold">השלמת ההזמנה</h2><p>אחרי שליחת ההזמנה ניצור איתכם קשר לסיום התשלום</p></div>
+      <div class="summary" id="summary">עדיין לא נבחרו מוצרים.</div>
+      <div class="fields">
+        <div><label for="fname">שם מלא *</label><input type="text" id="fname" autocomplete="name"></div>
+        <div><label for="phone">טלפון *</label><input type="tel" id="phone" class="ltr" autocomplete="tel" placeholder="050-0000000"></div>
+        <div><label for="email">מייל (לקבלת עותק)</label><input type="email" id="email" class="ltr" autocomplete="email"></div>
+      </div>
+      <label for="notes">הערות להזמנה (לא חובה)</label>
+      <textarea id="notes" rows="3"></textarea>
+      <input type="text" class="hp" id="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <label class="chk"><input type="checkbox" id="ok"><span>אני מאשר/ת את ההזמנה. התשלום יסתיים מולכם ישירות, לא באתר.</span></label>
+      <div class="err" id="err" role="alert"></div>
+      <button class="btn" id="send">שליחת הזמנה</button>
+    </div>
+    <div class="done" id="done" hidden>
+      <h2 class="gold">ההזמנה התקבלה</h2>
+      <p>אם הזנתם מייל, נשלח אליכם עותק. ניצור קשר בקרוב.</p>
+    </div>
+  </section>
+
+  <section id="contact" hidden>
+    <div class="sec"><h2 class="gold">יצירת קשר</h2></div>
+    <div class="contact" id="contactBoxes"></div>
+  </section>
+
+  <footer><span id="footName"></span></footer>
+</main>
+
+<div class="bar" id="bar" hidden><div>
+  <div><strong id="count">0</strong> פריטים · <strong id="total">₪0</strong></div>
+  <a class="btn" href="#order">להזמנה</a>
+</div></div>
+
+<script>
+/* ===== הגדרה אחת בלבד: כתובת ה-Web App מ-Google Apps Script (מסתיימת ב-/exec) ===== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7c5MjZT4GKjAZBDuEqArpYEDZG1cTFzs6BedNKd6p8Y0mqiMeOpIA8bt4Y3eQp2mKUg/exec";
+/* ======================================================================================= */
+
+let PRODUCTS = [];
+const cart = {};
+const $ = id => document.getElementById(id);
+const money = n => "₪" + Number(n).toLocaleString("he-IL");
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function applySettings(s){
+  const name = s.businessName || "שם העסק";
+  $("biz").textContent = name; $("brandName").textContent = name; $("footName").textContent = name;
+  document.title = "הזמנות – " + name;
+  if (s.logo) { $("mono").innerHTML = `<img src="${esc(s.logo)}" alt="">`; $("mono").hidden = false; }
+  if (s.banner) { $("bannerImg").src = s.banner; $("banner").hidden = false; document.querySelector(".hero").classList.add("hasb"); }
+  if (s.tagline) { $("tagline").textContent = s.tagline; $("tagline").hidden = false; }
+  if (s.phone) { $("heroPhone").href = "tel:" + s.phone; $("heroPhone").textContent = s.phone; $("heroPhone").hidden = false; }
+  const c = [];
+  if (s.phone) c.push(["טלפון", `<a href="tel:${esc(s.phone)}" dir="ltr">${esc(s.phone)}</a>`]);
+  if (s.whatsapp) { let w = s.whatsapp.replace(/\D/g, ""); if (w[0] === "0") w = "972" + w.slice(1);
+    c.push(["וואטסאפ", `<a href="https://wa.me/${w}" target="_blank" rel="noopener" dir="ltr">${esc(s.whatsapp)}</a>`]); }
+  if (s.email) c.push(["מייל", `<a href="mailto:${esc(s.email)}" dir="ltr">${esc(s.email)}</a>`]);
+  if (s.address) c.push(["כתובת", esc(s.address)]);
+  if (s.hours) c.push(["שעות פעילות", esc(s.hours)]);
+  $("contactBoxes").innerHTML = c.map(x => `<div class="cbox"><small>${x[0]}</small>${x[1]}</div>`).join("");
+  $("contact").hidden = $("navContact").hidden = !c.length;
+}
+
+function showGrid(){
+  $("grid").innerHTML = PRODUCTS.length ? PRODUCTS.map(p => `
+    <article class="panel${p.soldout ? " out" : ""}" id="c${esc(p.id)}">
+      <div class="pic">${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : esc(p.name.trim().charAt(0))}</div>
+      <div class="body">
+        <h3 class="gold">${esc(p.name)}</h3>
+        ${p.description ? `<p>${esc(p.description)}</p>` : ""}
+        <div class="price">${p.price === null ? "מחיר בתיאום" : money(p.price)}</div>
+        ${p.soldout ? '<div class="soldout">אזל מהמלאי</div>' : ""}<div class="qty"${p.soldout ? " hidden" : ""}>
+          <button type="button" data-id="${esc(p.id)}" data-d="1" aria-label="הוסף">+</button>
+          <output id="q${esc(p.id)}">0</output>
+          <button type="button" data-id="${esc(p.id)}" data-d="-1" aria-label="הסר">−</button>
+        </div>
+      </div>
+    </article>`).join("") : '<div class="empty">החנות בהקמה. מוצרים יתווספו בקרוב.</div>';
+}
+
+async function load(){
+  if (!SCRIPT_URL) { PRODUCTS = []; showGrid(); return; }
+  try {
+    const j = await (await fetch(SCRIPT_URL)).json();
+    if (j.error === "disabled") { $("grid").innerHTML = '<div class="empty">האתר סגור זמנית. נסו שוב מאוחר יותר.</div>'; $("order").hidden = true; return; }
+    PRODUCTS = j.products || []; applySettings(j.settings || {}); showGrid();
+  } catch (e) { $("grid").innerHTML = '<div class="empty">לא הצלחנו לטעון את המוצרים. נסו לרענן.</div>'; }
+}
+load();
+
+$("grid").addEventListener("click", e => {
+  const b = e.target.closest("button[data-id]"); if (!b) return;
+  const id = b.dataset.id, q = Math.max(0, Math.min(100, (cart[id] || 0) + Number(b.dataset.d)));
+  cart[id] = q; $("q" + id).textContent = q; $("c" + id).classList.toggle("on", q > 0); refresh();
+});
+
+function items(){ return PRODUCTS.filter(p => cart[p.id] > 0).map(p => ({...p, qty: cart[p.id]})); }
+function refresh(){
+  const it = items(), n = it.reduce((a, x) => a + x.qty, 0);
+  const t = it.reduce((a, x) => a + (x.price === null ? 0 : x.price * x.qty), 0);
+  $("count").textContent = n; $("total").textContent = money(t); $("bar").hidden = n === 0;
+  $("summary").innerHTML = it.length
+    ? it.map(x => `<div><span>${esc(x.name)} × ${x.qty}</span><span>${x.price === null ? "מחיר בתיאום" : money(x.price * x.qty)}</span></div>`).join("")
+      + `<div><strong>סה״כ</strong><strong>${money(t)}${it.some(x => x.price === null) ? " + בתיאום" : ""}</strong></div>`
+    : "עדיין לא נבחרו מוצרים.";
+}
+
+function fail(t){ $("err").textContent = t; }
+
+$("send").onclick = async () => {
+  fail("");
+  const name = $("fname").value.trim(), phone = $("phone").value.trim(), email = $("email").value.trim();
+  const digits = phone.replace(/\D/g, "");
+  if (!items().length) return fail("נא לבחור לפחות מוצר אחד.");
+  if (!name) return fail("נא למלא שם מלא.");
+  if (digits.length < 9 || digits.length > 15 || !/^[\d\s\-+()]+$/.test(phone)) return fail("נא להזין מספר טלפון תקין (לפחות 9 ספרות).");
+  if (email && !/^\S+@\S+\.\S+$/.test(email)) return fail("כתובת המייל אינה תקינה.");
+  if (!$("ok").checked) return fail("יש לסמן את אישור ההזמנה.");
+  if (!SCRIPT_URL) return fail("מצב הדגמה: עדיין לא חוברה כתובת שליחה (SCRIPT_URL).");
+
+  const order = { action: "order", hp: $("hp").value, name, phone, email, notes: $("notes").value.trim(),
+    items: items().map(x => ({ id: x.id, qty: x.qty })) };
+  $("send").disabled = true; $("send").textContent = "שולח...";
+  try {
+    const r = await (await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(order) })).json();
+    if (r.error === "rate") throw "נשלחו הרבה הזמנות בזמן קצר. נסו שוב בעוד דקה.";
+    if (r.error === "soldout") throw "אחד המוצרים אזל מהמלאי. רעננו את הדף ונסו שוב.";
+    if (r.error === "disabled") throw "האתר סגור זמנית.";
+    if (!r.ok) throw "ההזמנה לא נשלחה. בדקו את הפרטים ונסו שוב.";
+    $("formBox").hidden = true; $("done").hidden = false; $("bar").hidden = true;
+  } catch (e) {
+    fail(typeof e === "string" ? e : "השליחה נכשלה. נסו שוב או צרו קשר ישירות.");
+    $("send").disabled = false; $("send").textContent = "שליחת הזמנה";
+  }
+};
+</script>
+</body>
+</html>
